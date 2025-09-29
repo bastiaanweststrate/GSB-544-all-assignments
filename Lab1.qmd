@@ -1,0 +1,177 @@
+---
+title: Lab 1
+jupyter: python3
+format:
+    html:
+        embed-resources: true
+---
+
+
+
+## Task 1
+
+### Problem 1
+
+* x-axis: income
+* y-axis: Life Expectancy
+* fill: Region
+* size: population
+* the year is shown in the background of the visual
+* gridlines
+
+```{python}
+import pandas as pd
+
+df = pd.read_csv("/Users/bastiaanweststrate/Desktop/GSB 544/q1data.csv")
+```
+
+```{python}
+import numpy as np
+
+from plotnine import (
+    ggplot,
+    aes,
+    geom_point,
+    geom_jitter,
+    scale_x_continuous,
+    geom_boxplot,
+    scale_y_continuous,
+    labs,
+    theme,
+    scale_fill_manual,
+    scale_size,
+    geom_col,
+    annotate,
+)
+```
+
+```{python}
+(ggplot(df,aes("income", "life_exp", size ="population"))+geom_point(aes(fill="four_regions"), color = "black", stroke = 0.3)
++ scale_x_continuous(breaks =[500, 1000, 2000, 4000, 8000, 16000, 32000, 64000], 
+labels = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000], trans='log2') 
++ scale_y_continuous(limits = (20,90), breaks =range (20,91,10))
++ labs(x = "income",
+y = "life expectancy")
++ theme(figure_size=(11,5))
++ scale_fill_manual(values = ["#59CCE1", "#94DF45", "#E31A1C", "#F2E04A"])
++ scale_size(range=(0.5,23))
++ annotate("text", x=8000, y=50, label="2010", size=150, color="grey", alpha=.30)
++ annotate("text", x=500, y=89, label="years", size=10, color="grey", alpha=.80, angle=90)
++ annotate("text", x=40000, y=20, label="per person(GDP/capita, PPPS inflation-adjusted)", size=10, color="grey", alpha=.80)
++ annotate("text", x=1200, y=90, label="INCOME LEVEL 1", size=10, color="grey", alpha=.80)
++ annotate("text", x=4900, y=90, label="LEVEL 2", size=10, color="grey", alpha=.80)
++ annotate("text", x=13000, y=90, label="LEVEL 3", size=10, color="grey", alpha=.80)
++ annotate("text", x=45000, y=90, label="LEVEL 4", size=10, color="grey", alpha=.80))
+
+```
+
+# I chose to use a scatter plot with jitter because it makes it easier to see the relationship between income and life expectancy across countries. The jitter helps spread out points that would normally overlap, so the overall pattern is clearer. It’s a good way to spot clusters of countries and to see the general trend that higher income usually goes along with longer life expectancy.
+
+```{python}
+(
+    ggplot(df, aes(x="income", y="life_exp", color="four_regions"))
+    + geom_jitter(alpha=0.6)
+    + labs(title="Life Expectancy vs Income (Jittered)")
+)
+```
+
+# Task 2
+
+## Aesthetics:
+* x-axis: Exports as percentage of GDP
+* y-axis: Imports as percentage of GDP
+* size: Energy use
+* fill: Region
+* the year is shown in the background of the visual
+* gridlines
+
+```{python}
+df2 = pd.read_csv("/Users/bastiaanweststrate/Desktop/GSB 544/q2data.csv")
+```
+
+```{python}
+df2
+```
+
+```{python}
+df2.dtypes
+```
+
+```{python}
+df2['exports'] = pd.to_numeric(df2['exports'], errors='coerce')
+df2['imports'] = pd.to_numeric(df2['imports'], errors='coerce')
+df2['energy'] = pd.to_numeric(df2['energy'], errors='coerce')
+```
+
+```{python}
+(ggplot(df2,aes("exports", "imports", size ="energy")
+)+geom_point(aes(fill="four_regions"), color = "black", stroke = 0.3)
++ scale_x_continuous(limits = (0,220), breaks =range(0,221,20))
++ scale_y_continuous(limits=(0, 400),breaks=range(0, 401, 50))
++ labs(x = "Exports(\% of GDP)", y = "Imports(\% of GDP")
++ theme(figure_size = (11,5))
++ scale_fill_manual(values=["#59CCE1", "#94DF45", "#E36172", "#F2E04A"])
++ scale_size(range=(0.5,20))
++ annotate("text", x=110, y=175, label="1997", size=150, color="grey", alpha=.30))
+```
+
+# I used a boxplot because it’s a good way to compare the distribution of imports and exports across different regions. It shows not only the average levels but also the spread and presence of outliers, which helps highlight differences between regions more clearly than a scatterplot would.
+
+```{python}
+(
+    ggplot(df2, aes(x="four_regions", fill="four_regions"))
+    + geom_boxplot(aes(y="imports"), alpha=0.5)
+    + geom_boxplot(aes(y="exports"), alpha=0.5)
+    + labs(
+        title="Distribution of Imports and Exports by Region (1997)",
+        x="Region",
+        y="% of GDP"
+    )
+    + theme(figure_size=(10, 5))
+)
+```
+
+# Task 3
+
+## Aesthetics:
+* x-axis: individuals using internet
+* y-axis: GDP/capita
+* size: income 
+* fill: Region
+* the year is shown in the background of the visual
+* gridlines
+
+```{python}
+df3 = pd.read_csv("/Users/bastiaanweststrate/Desktop/GSB 544/q3data.csv")
+```
+
+```{python}
+df3
+```
+
+```{python}
+(
+ggplot(df3, aes("internet_users", "gdp", size="income"))+ geom_point(aes(fill="four_regions"), color="black",stroke=0.3)
++scale_x_continuous(limits =(0,90), breaks = range(0,91,10))
++ scale_y_continuous(breaks=[200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000], labels=[200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000],trans="log2")
++ labs(y = "GDP/capita", x = "Individuals using the Internet")
++ theme (figure_size = (11,5))
++ scale_fill_manual(values=["#59CCE1", "#94DF45", "#E36172", "#F2E04A"])
++ scale_size(range=(0.5,20))
++ annotate("text", x=50, y=4000, label="2001", size=150, color="grey", alpha=.20))
+```
+
+# I chose a bar chart here because it makes it easier to compare GDP per capita against internet usage across regions. It’s straightforward to see which regions stand out and how the values differ, and the use of color by region makes the differences even clearer.
+
+```{python}
+(ggplot(df3, aes(x="internet_users", y="gdp", fill="four_regions"))
++ geom_col(alpha=0.7)
++ labs(
+ title="GDP per Capita vs Internet Users by Region (2001)",
+x="Individuals Using the Internet (%)",
+y="GDP per Capita")
+ + theme(figure_size=(10, 5))
+)
+
+```
+
